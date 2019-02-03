@@ -36,6 +36,7 @@ public:
 
     const std::string& firstName() const { return m_firstName; }
     const std::string& lastName() const { return m_lastName; }
+    const std::string& uid() const { return m_uid; }
 
 
     const stringvector& numbers() const;
@@ -49,6 +50,7 @@ private:
 #endif
     std::string m_firstName;
     std::string m_lastName;
+    std::string m_uid;
     stringvector m_numbers;
     stringvector m_emails;
 };
