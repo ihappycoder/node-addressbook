@@ -25,19 +25,22 @@ using namespace Nan;
 using namespace std;
 using namespace v8;
 
-void setStringArray(Isolate* isolate, Local<Object> obj, const char* name, const stringvector& src) {
+void setStringArray(Isolate* isolate, v8::MaybeLocal<v8::Object> obj, const char* name, const stringvector& src) {
+  v8::MaybeLocal<v8::Context> context = obj->CreationContext();
   Local<Array> array = Array::New(isolate);
   for (unsigned int i = 0; i < src.size(); i++) {
-    Local<String> result = String::NewFromUtf8(isolate, src[i].c_str());
-    array->Set(i, result);
+    v8::MaybeLocal<String> result = String::NewFromUtf8(isolate, src[i].c_str());
+    array->Set(context, i, result);
   }
-  obj->Set(String::NewFromUtf8(isolate, name), array);
+  obj->Set(context, String::NewFromUtf8(isolate, name), array);
 }
 
-void fillPersonObject(Isolate* isolate, Local<Object> obj, Person* person) {
-  obj->Set(String::NewFromUtf8(isolate, "firstName"), String::NewFromUtf8(isolate, person->firstName().c_str()));
-  obj->Set(String::NewFromUtf8(isolate, "lastName"), String::NewFromUtf8(isolate, person->lastName().c_str()));
-  obj->Set(String::NewFromUtf8(isolate, "uid"), String::NewFromUtf8(isolate, person->uid().c_str()));
+void fillPersonObject(Isolate* isolate, v8::MaybeLocal<v8::Object> obj, Person* person) {
+  v8::MaybeLocal<v8::Context> context = obj->CreationContext();
+  obj->Set(context, String::NewFromUtf8(isolate, "firstName"),
+           String::NewFromUtf8(isolate, person->firstName().c_str()));
+  obj->Set(context, String::NewFromUtf8(isolate, "lastName"), String::NewFromUtf8(isolate, person->lastName().c_str()));
+  obj->Set(context, String::NewFromUtf8(isolate, "uid"), String::NewFromUtf8(isolate, person->uid().c_str()));
 
   setStringArray(isolate, obj, "emails", person->emails());
   setStringArray(isolate, obj, "numbers", person->numbers());
