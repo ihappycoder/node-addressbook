@@ -24,23 +24,32 @@
 using namespace Nan;
 using namespace std;
 using namespace v8;
+using ::v8::Context;
+using ::v8::Local;
 
-void setStringArray(Isolate* isolate, v8::MaybeLocal<v8::Object> obj, const char* name, const stringvector& src) {
-  v8::MaybeLocal<v8::Context> context = obj->CreationContext();
+void setStringArray(Isolate* isolate, v8::Local<v8::Object> obj, const char* name, const stringvector& src) {
   Local<Array> array = Array::New(isolate);
   for (unsigned int i = 0; i < src.size(); i++) {
-    v8::MaybeLocal<String> result = String::NewFromUtf8(isolate, src[i].c_str());
-    array->Set(context, i, result);
+    v8::Local<String> result = String::NewFromUtf8(isolate, src[i].c_str()).ToLocalChecked();
+    array->Set(v8::Isolate::GetCurrent()->GetCurrentContext(), i, result);
   }
-  obj->Set(context, String::NewFromUtf8(isolate, name), array);
+  obj->Set(v8::Isolate::GetCurrent()->GetCurrentContext(), String::NewFromUtf8(isolate, name).ToLocalChecked(), array);
 }
 
-void fillPersonObject(Isolate* isolate, v8::MaybeLocal<v8::Object> obj, Person* person) {
-  v8::MaybeLocal<v8::Context> context = obj->CreationContext();
-  obj->Set(context, String::NewFromUtf8(isolate, "firstName"),
-           String::NewFromUtf8(isolate, person->firstName().c_str()));
-  obj->Set(context, String::NewFromUtf8(isolate, "lastName"), String::NewFromUtf8(isolate, person->lastName().c_str()));
-  obj->Set(context, String::NewFromUtf8(isolate, "uid"), String::NewFromUtf8(isolate, person->uid().c_str()));
+void fillPersonObject(Isolate* isolate, v8::Local<v8::Object> obj, Person* person) {
+  // v8::MaybeLocal<v8::Context> context = obj->CreationContext();
+  // v8::Local<v8::Context> context =
+  //     v8::Local<v8::Context>::New(isolate);
+  // Persistent<Context> context = Context::New(isolate, NULL, global);
+  // LocalContext context;
+  // v8::Local<v8::Context> context = Context::New(isolate);
+  obj->Set(v8::Isolate::GetCurrent()->GetCurrentContext(),
+           v8::String::NewFromUtf8(isolate, "firstName").ToLocalChecked(),
+           String::NewFromUtf8(isolate, person->firstName().c_str()).ToLocalChecked());
+  obj->Set(v8::Isolate::GetCurrent()->GetCurrentContext(), String::NewFromUtf8(isolate, "lastName").ToLocalChecked(),
+           String::NewFromUtf8(isolate, person->lastName().c_str()).ToLocalChecked());
+  obj->Set(v8::Isolate::GetCurrent()->GetCurrentContext(), String::NewFromUtf8(isolate, "uid").ToLocalChecked(),
+           String::NewFromUtf8(isolate, person->uid().c_str()).ToLocalChecked());
 
   setStringArray(isolate, obj, "emails", person->emails());
   setStringArray(isolate, obj, "numbers", person->numbers());

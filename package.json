@@ -1,6 +1,7 @@
 {
   "author": "Wire Swiss <wireapp@wire.com>",
   "dependencies": {
+    "electron-rebuild": "1.10.1",
     "nan": "2.14.0"
   },
   "description": "OSX addressbook access for node",
